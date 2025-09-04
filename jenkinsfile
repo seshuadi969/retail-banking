@@ -2,33 +2,56 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven-3.9.11'   // Use the Maven you configured in Jenkins (Manage Jenkins → Tools)
+        // This must match the Maven name you configured in Jenkins -> Manage Jenkins -> Global Tool Configuration
+        maven 'Maven-3.9.9'
+    }
+
+    environment {
+        // Use shared Maven repository for caching dependencies
+        MAVEN_OPTS = "-Dmaven.repo.local=/var/lib/jenkins/.m2/repository"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/seshuadi969/retail-banking.git'
+                echo 'Cloning source code from GitHub...'
+                git branch: 'master', url: 'https://github.com/seshuadi969/retail-banking.git'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                echo 'Building the project...'
+                sh "mvn clean compile"
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+                echo 'Running tests...'
+                sh "mvn test"
             }
         }
 
-        stage('Deploy') {
+        stage('Package') {
             steps {
-                sh 'java -jar target/*.jar &'
+                echo 'Packaging application...'
+                sh "mvn package"
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+                }
             }
         }
     }
-}
 
+    post {
+        success {
+            echo '✅ Build and tests completed successfully!'
+        }
+        failure {
+            echo '❌ Build failed. Please check the logs.'
+        }
+    }
+}
