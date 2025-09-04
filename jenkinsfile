@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = "retail-banking"
+        DOCKER_IMAGE = "retail-banking-app"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/seshuadi969/retail-banking.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t ${DOCKER_IMAGE} ."
+                }
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                script {
+                    // stop and remove existing container if running
+                    sh "docker rm -f ${APP_NAME} || true"
+                    // run new container
+                    sh "docker run -d --name ${APP_NAME} -p 9988:8080 ${DOCKER_IMAGE}"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Deployment successful! Application is running on port 8080'
+        }
+        failure {
+            echo '❌ Build/Deployment failed. Check logs.'
+        }
+    }
+}
+
