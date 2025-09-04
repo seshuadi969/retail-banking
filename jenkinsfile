@@ -2,56 +2,86 @@ pipeline {
     agent any
 
     tools {
-        // This must match the Maven name you configured in Jenkins -> Manage Jenkins -> Global Tool Configuration
-        maven 'Maven-3.9.9'
+        jdk 'JDK21'                  // JDK configured in Jenkins
+        maven 'Maven-3.9.9'          // Maven configured in Jenkins
     }
 
     environment {
-        // Use shared Maven repository for caching dependencies
-        MAVEN_OPTS = "-Dmaven.repo.local=/var/lib/jenkins/.m2/repository"
+        APP_NAME = "retail-banking"
+        APP_PORT = "8080"
+        DEPLOY_DIR = "/opt/${APP_NAME}"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Cloning source code from GitHub...'
                 git branch: 'master', url: 'https://github.com/seshuadi969/retail-banking.git'
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building the project...'
-                sh "mvn clean compile"
+                sh 'mvn clean package -DskipTests'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
-                sh "mvn test"
+                sh 'mvn test'
             }
         }
 
         stage('Package') {
             steps {
-                echo 'Packaging application...'
-                sh "mvn package"
+                sh '''
+                    echo "Packaging application..."
+                    ls -l target/
+                '''
             }
-            post {
-                success {
-                    archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
-                }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                    echo "Deploying application..."
+
+                    # Create deployment directory if not exists
+                    sudo mkdir -p $DEPLOY_DIR
+
+                    # Stop any running instance
+                    if pgrep -f "$APP_NAME.jar"; then
+                        echo "Stopping running application..."
+                        pkill -f "$APP_NAME.jar" || true
+                    fi
+
+                    # Copy latest jar to deployment directory
+                    JAR_FILE=$(ls target/*.jar | head -n 1)
+                    cp $JAR_FILE $DEPLOY_DIR/$APP_NAME.jar
+
+                    # Start application in background
+                    nohup java -jar $DEPLOY_DIR/$APP_NAME.jar --server.port=$APP_PORT > $DEPLOY_DIR/app.log 2>&1 &
+                '''
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                sh '''
+                    echo "Waiting for application to start..."
+                    sleep 10
+                    curl -I http://localhost:$APP_PORT || true
+                '''
             }
         }
     }
 
     post {
         success {
-            echo '✅ Build and tests completed successfully!'
+            echo "✅ Deployment successful! Application running on port $APP_PORT"
         }
         failure {
-            echo '❌ Build failed. Please check the logs.'
+            echo "❌ Pipeline failed! Check logs."
         }
     }
 }
+
