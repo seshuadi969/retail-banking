@@ -1,9 +1,8 @@
 pipeline {
     agent any
 
-    environment {
-        APP_NAME = "retail-banking"
-        DOCKER_IMAGE = "retail-banking-app"
+    tools {
+        maven 'Maven-3.9.11'   // Use the Maven you configured in Jenkins (Manage Jenkins → Tools)
     }
 
     stages {
@@ -25,32 +24,10 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Deploy') {
             steps {
-                script {
-                    sh "docker build -t ${DOCKER_IMAGE} ."
-                }
+                sh 'java -jar target/*.jar &'
             }
-        }
-
-        stage('Run Container') {
-            steps {
-                script {
-                    // stop and remove existing container if running
-                    sh "docker rm -f ${APP_NAME} || true"
-                    // run new container
-                    sh "docker run -d --name ${APP_NAME} -p 9988:8080 ${DOCKER_IMAGE}"
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo '✅ Deployment successful! Application is running on port 8080'
-        }
-        failure {
-            echo '❌ Build/Deployment failed. Check logs.'
         }
     }
 }
