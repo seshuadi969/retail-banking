@@ -30,8 +30,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Example: Spring Boot dependency (if you’re using it) -->
-        <!--
+        <!-- Example: Spring Boot starter (uncomment if you need Spring Boot)
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -62,7 +61,7 @@
                 <version>3.0.0</version>
             </plugin>
 
-            <!-- Jar Plugin (optional, for packaging) -->
+            <!-- Jar Plugin (for packaging executable JARs) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
