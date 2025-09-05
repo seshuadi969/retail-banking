@@ -1,152 +1,83 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.4</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
-	<groupId>xyz.subho</groupId>
-	<artifactId>retail.banking</artifactId>
-	<version>1.0</version>
-	<name>retail.banking</name>
-	<description>Retail banking project using MVC for TCS Case Study using Agile Methodologies</description>
-	
-  	<distributionManagement>
-		<repository>
-			<id>github</id>
-			<name>Subhrodip's Maven Remote</name>
-			<url>https://maven.pkg.github.com/ohbus/Retail-Banking</url>
-		</repository>
-	</distributionManagement>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<properties>
-		<java.version>21</java.version>
-		<spring-boot.version>3.2.0</spring-boot.version>
-		<mysql-connector.version>9.1.0</mysql-connector.version>
-		<testcontainers.version>1.20.6</testcontainers.version>
-		<liquibase-maven-plugin.version>4.9.1</liquibase-maven-plugin.version>
-		<jacoco.version>0.8.13</jacoco.version>
-		
-		<sonar.projectKey>ohbus_retail-banking</sonar.projectKey>
-		<sonar.organization>ohbus</sonar.organization>
-		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-	</properties>
+    <modelVersion>4.0.0</modelVersion>
 
-	<dependencies>
+    <groupId>xyz.subho</groupId>
+    <artifactId>retail.banking</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
 
+    <name>Retail Banking Application</name>
+    <description>Sample retail banking project built with Maven</description>
+
+    <!-- Properties -->
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <!-- Dependencies -->
+    <dependencies>
+        <!-- JUnit for testing -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
-		</dependency>
-		
-		<dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>${mysql-connector.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-		
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.junit.vintage</groupId>
-					<artifactId>junit-vintage-engine</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>mysql</artifactId>
-            <version>${testcontainers.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testcontainers</groupId>
+            <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${testcontainers.version}</version>
+            <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
-		
-	</dependencies>
-          <build>
-          <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-surefire-plugin</artifactId>
-             <version>3.0.0</version>
-             </plugin>
-            </plugins>
-           </build>
 
+        <!-- Example: Spring Boot dependency (if you’re using it) -->
+        <!--
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+        -->
+    </dependencies>
+
+    <!-- Build Configuration -->
+    <build>
+        <plugins>
+
+            <!-- Compiler Plugin -->
             <plugin>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <version>${liquibase-maven-plugin.version}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
                 <configuration>
-                    <propertyFile>src/main/resources/liquibase.properties</propertyFile>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
             </plugin>
+
+            <!-- Surefire Plugin (for running tests) -->
             <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0</version>
             </plugin>
+
+            <!-- Jar Plugin (optional, for packaging) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.example.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
 </project>
+
