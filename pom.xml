@@ -2,19 +2,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>xyz.subho</groupId>
-    <artifactId>retail.banking</artifactId>
+    <groupId>com.example</groupId>
+    <artifactId>retail-banking</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
     <name>Retail Banking Application</name>
 
-    <!-- Spring Boot parent -->
+    <!-- Spring Boot parent (manages dependency versions) -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.5</version> <!-- latest stable Spring Boot -->
+        <version>3.2.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -23,22 +24,16 @@
     </properties>
 
     <dependencies>
-        <!-- Core Spring Boot starter -->
+        <!-- Core Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- Spring Web (REST APIs, Controllers) -->
+        <!-- REST APIs -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <!-- Spring Security -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
         <!-- JPA & Hibernate -->
@@ -47,20 +42,14 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- Database Driver (H2 for dev, change to MySQL/Postgres as needed) -->
+        <!-- Database Driver (H2 for dev; replace with MySQL/Postgres later) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- JSON handling -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-
-        <!-- Lombok (optional, to reduce boilerplate) -->
+        <!-- Lombok (optional, removes boilerplate code) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -84,4 +73,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
