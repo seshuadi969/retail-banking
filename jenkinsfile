@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK21'                  // JDK configured in Jenkins
-        maven 'Maven-3.9.9'          // Maven configured in Jenkins
+        jdk 'JDK21'                 // JDK 21 (must be installed in Jenkins)
+        maven 'Maven-3.9.9'         // Maven (configured in Jenkins)
     }
 
     environment {
         APP_NAME = "retail-banking"
-        APP_PORT = "9988"
+        APP_PORT = "8080"
         DEPLOY_DIR = "/opt/${APP_NAME}"
     }
 
@@ -34,8 +34,8 @@ pipeline {
         stage('Package') {
             steps {
                 sh '''
-                    echo "Packaging application..."
-                    ls -l target/
+                    echo "Packaging the application..."
+                    ls -lh target/*.jar
                 '''
             }
         }
@@ -45,20 +45,20 @@ pipeline {
                 sh '''
                     echo "Deploying application..."
 
-                    # Create deployment directory if not exists
+                    # Create deployment directory
                     sudo mkdir -p $DEPLOY_DIR
 
-                    # Stop any running instance
+                    # Stop old app if running
                     if pgrep -f "$APP_NAME.jar"; then
-                        echo "Stopping running application..."
+                        echo "Stopping old process..."
                         pkill -f "$APP_NAME.jar" || true
                     fi
 
-                    # Copy latest jar to deployment directory
+                    # Copy new JAR
                     JAR_FILE=$(ls target/*.jar | head -n 1)
                     cp $JAR_FILE $DEPLOY_DIR/$APP_NAME.jar
 
-                    # Start application in background
+                    # Start new app
                     nohup java -jar $DEPLOY_DIR/$APP_NAME.jar --server.port=$APP_PORT > $DEPLOY_DIR/app.log 2>&1 &
                 '''
             }
@@ -67,7 +67,7 @@ pipeline {
         stage('Verify') {
             steps {
                 sh '''
-                    echo "Waiting for application to start..."
+                    echo "Waiting for app to start..."
                     sleep 10
                     curl -I http://localhost:$APP_PORT || true
                 '''
@@ -77,11 +77,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Deployment successful! Application running on port $APP_PORT"
+            echo "✅ Deployment successful! App is running at http://localhost:${APP_PORT}"
         }
         failure {
-            echo "❌ Pipeline failed! Check logs."
+            echo "❌ Build failed. Check logs."
         }
     }
 }
-
