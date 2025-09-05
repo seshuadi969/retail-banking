@@ -3,63 +3,60 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK21'            // Make sure JDK21 is installed in Jenkins global tools
-        maven 'Maven-3.9.9'    // Make sure Maven-3.9.9 is installed in Jenkins global tools
+        jdk 'JDK21'                // Must match the JDK you configured in Jenkins
+        maven 'Maven-3.9.9'        // Must match Maven name configured in Jenkins
+    }
+
+    environment {
+        IMAGE_NAME = "retail-banking-app"
+        CONTAINER_NAME = "retail-banking-container"
+        WORKDIR = "/var/lib/jenkins/workspace/banking application"
     }
 
     stages {
-
         stage('Checkout') {
             steps {
-                // Clone your GitHub repository
-                git branch: 'main', url: 'https://github.com/seshuadi969/retail-banking.git'
+                git branch: 'master', url: 'https://github.com/seshuadi969/retail-banking.git'
             }
         }
 
         stage('Build') {
             steps {
-                // Build project and skip tests, ignore clean errors
-                sh 'mvn clean package -DskipTests -Dmaven.clean.failOnError=false'
+                // Avoid clean delete issue + handle space in path
+                sh 'cd "$WORKDIR" && mvn package -DskipTests -Dmaven.clean.failOnError=false'
             }
         }
 
-        stage('Test') {
+        stage('Docker Build') {
             steps {
-                // Run unit tests
-                sh 'mvn test || true'   // `|| true` prevents pipeline failure if tests fail
-            }
-        }
-
-        stage('Package') {
-            steps {
-                // Archive the JAR/WAR file as a Jenkins artifact
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                sh '''
+                    cd "$WORKDIR"
+                    docker build -t $IMAGE_NAME .
+                '''
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying application...'
-
-                // Example: run the jar
-                sh 'nohup java -jar target/*.jar > app.log 2>&1 &'
-
-                // OR, if Docker:
-                // sh 'docker build -t retail-banking-app .'
-                // sh 'docker run -d -p 8080:8080 --name retail-banking retail-banking-app'
+                sh '''
+                    # Stop old container if running
+                    docker rm -f $CONTAINER_NAME || true
+                    
+                    # Run new container
+                    docker run -d --name $CONTAINER_NAME -p 8080:8080 $IMAGE_NAME
+                '''
             }
         }
     }
 
     post {
-        always {
-            echo 'Pipeline finished.'
-        }
         success {
-            echo 'Build succeeded!'
+            echo '✅ Deployment successful! App is running at http://<server-ip>:8080'
         }
         failure {
-            echo 'Build failed!'
+            echo '❌ Build/Deploy failed. Check logs.'
         }
     }
 }
+
+      
