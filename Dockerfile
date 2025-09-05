@@ -13,4 +13,5 @@ COPY --from=build /app/target/*.jar app.jar
 EXPOSE 9090
 
 # Run app (Spring Boot will still run on 8080 by default unless overridden)
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--server.port=9090"]
+
