@@ -1,28 +1,16 @@
-# Build stage
-FROM maven:3-amazoncorretto-21-debian AS build
-
+# Step 1: Build the application
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /app
+COPY . .
+RUN mvn package -DskipTests -Dmaven.clean.failOnError=false
 
-COPY pom.xml .
-RUN mvn dependency:go-offline
-
-COPY src ./src
-RUN mvn clean package -DskipTests
-
-# Run stage
-FROM amazoncorretto:21-alpine
-
-LABEL maintainer="Subhrodip Mohanta hello@subho.xyz"
-LABEL artifact="retail-banking"
-LABEL name="Retail Banking"
-LABEL org.opencontainers.image.source="https://github.com/ohbus/retail-banking"
-
+# Step 2: Run the application
+FROM eclipse-temurin:21-jdk
 WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 
-COPY --from=build /app/target/retail.banking-1.0.jar .
+# Change the exposed port
+EXPOSE 9090
 
-EXPOSE 9998
-
-ENV SPRING_PROFILES_ACTIVE=prod
-
-ENTRYPOINT [ "java", "-jar", "retail.banking-1.0.jar" ]
+# Run app (Spring Boot will still run on 8080 by default unless overridden)
+ENTRYPOINT ["java", "-jar", "app.jar"]
